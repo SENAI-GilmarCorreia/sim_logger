@@ -68,7 +68,7 @@ If you prefer to build the package with `CMake` outside of a ROS2 workspace, fol
 
 1. Start a CoppeliaSim simulation.
 
-2. The plugin will automatically begin logging data when the simulation starts. A CSV file will be created in the same directory, named with the current date and time, e.g., `simLogs_2024-09-16_12-30-45.csv`.
+2. The plugin will automatically begin logging data when the simulation starts. A CSV file will be created in the same directory, named with the current date and time, e.g., `simLogger_2024-09-16_12-30-45.csv`.
 
 3. The CSV file will log:
    - **Frame number**: Sequential count of frames.

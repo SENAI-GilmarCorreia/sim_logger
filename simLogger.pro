@@ -1,7 +1,7 @@
 QT -= core
 QT -= gui
 
-TARGET = simLogs
+TARGET = simLogger
 TEMPLATE = lib
 
 DEFINES -= UNICODE
@@ -56,13 +56,13 @@ unix:!symbian {
 }
 
 HEADERS += \
-    sourceCode/simLogs.h \
+    sourceCode/simLogger.h \
     ../include/simLib/scriptFunctionData.h \
     ../include/simLib/scriptFunctionDataItem.h \
     ../include/simLib/simLib.h 
 
 SOURCES += \
-    sourceCode/simLogs.cpp \
+    sourceCode/simLogger.cpp \
     ../include/simLib/scriptFunctionData.cpp \
     ../include/simLib/scriptFunctionDataItem.cpp \
     ../include/simLib/simLib.cpp

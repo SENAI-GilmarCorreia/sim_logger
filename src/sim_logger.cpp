@@ -1,4 +1,4 @@
-#include "sim_logs.h"
+#include "sim_logger.h"
 #include <simLib/scriptFunctionData.h>
 #include <iostream>
 #include <fstream>
@@ -66,7 +66,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
 
         // Create CSV filename with date and time
         std::string dateTime = getCurrentDateTime();
-        std::string fileName = "simLogs_" + dateTime + ".csv";
+        std::string fileName = "simLogger_" + dateTime + ".csv";
         csvFile.open(fileName);
 
         // Verify if file opened successfully

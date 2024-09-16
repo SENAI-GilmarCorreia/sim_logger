@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(sim_logs)
+project(sim_logger)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MACOSX_RPATH 1)
@@ -37,14 +37,14 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 find_package(Boost REQUIRED)
 
 coppeliasim_add_plugin(
-    simLogs
+    simLogger
     LEGACY
     SOURCES
-    src/sim_logs.cpp
+    src/sim_logger.cpp
     ${COPPELIASIM_INCLUDE_DIR}/simLib/scriptFunctionData.cpp
     ${COPPELIASIM_INCLUDE_DIR}/simLib/scriptFunctionDataItem.cpp
 )
-coppeliasim_add_lua(lua/simLogs.lua)
-coppeliasim_add_lua(lua/simLogs-ce.lua)
+coppeliasim_add_lua(lua/simLogger.lua)
+coppeliasim_add_lua(lua/simLogger-ce.lua)
 
 ament_package()
