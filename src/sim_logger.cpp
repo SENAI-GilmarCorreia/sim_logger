@@ -14,7 +14,9 @@ static std::ofstream csvFile;
 static std::chrono::high_resolution_clock::time_point lastTime, initialTime;
 static int frameCount = 0;
 static float fps = 0.0f;
-static auto sep = ';';
+static char sep = ';';
+static double firstRealTime, firstSystemTime;
+static bool first = true;
 
 // Get current system date and time for filename creation
 static std::string getCurrentDateTime() {
@@ -179,9 +181,9 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
                     << std::to_string(simTime_ms) << sep 
                     << std::to_string(realTime_ms) << sep 
                     << std::to_string(systemTime_ms) << sep 
-                    << std::to_string(sim_rtf) << sep
-                    << "" << sep
-                    << "" << sep
+                    << "" << sep //<< std::to_string(sim_rtf) << sep
+                    << "" << sep //<< os_rtf 
+                    << "" << sep //<< render fps
                     << std::to_string(fps) << sep 
                     << objectsData << sep 
                     << std::to_string(collisionCount) << std::endl;
