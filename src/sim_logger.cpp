@@ -77,12 +77,16 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
 
         // Write CSV headers
         csvFile << "Frame" << sep 
-                << "Simulation Time (ms)" << sep 
-                << "System Time (ms)" << sep 
-                << "FPS (Hz)" << sep 
+                << "CoppeliaSim - Step Size (ms)" << sep
+                << "CoppeliaSim - Simulation Time (ms)" << sep 
+                << "CoppeliaSim - Real Time (ms)" << sep
+                << "OS - System Time (ms)" << sep 
+                << "CoppeliaSim - RTF" << sep
+                << "OS - RTF" << sep
+                << "CoppeliaSim - Render FPS (Hz)" << sep
+                << "OS - Plugin FPS (Hz)" << sep 
                 << "Active Objects" << sep 
-                << "Collision Count" << sep 
-                << "Step Size (ms)" << std::endl;
+                << "Collision Count" << std::endl;                
 
         initialTime = std::chrono::high_resolution_clock::now(); // Initialize start time
         lastTime = std::chrono::high_resolution_clock::now();  // Initialize last time for FPS calculations
@@ -91,7 +95,8 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
     if ((info->msgId == sim_message_eventcallback_simulationsensing) && (info->auxData[0] == 0))
     {
         // Get current simulation time in ms
-        int simTime_ms = static_cast<int>(simGetSimulationTime() * 1000);
+        double simTime_ms = simGetSimulationTime() * 1000;
+        double realTime_ms = simGetSystemTime() * 1000;
 
         // Increment frame counter
         frameCount++;
@@ -112,6 +117,8 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
             frameCount = 0;
             lastTime = currentTime;
         }
+
+        double sim_rtf = simTime_ms/realTime_ms;
 
         // Log active objects
         int sceneObjectsCtn;
@@ -168,12 +175,17 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         if (csvFile.is_open()) {
             auto sep = ';';
             csvFile << std::to_string(frameCount) << sep 
+                    << std::to_string(stepSize) << sep
                     << std::to_string(simTime_ms) << sep 
+                    << std::to_string(realTime_ms) << sep 
                     << std::to_string(systemTime_ms) << sep 
+                    << std::to_string(sim_rtf) << sep
+                    << "" << sep
                     << std::to_string(fps) << sep 
+                    << "" << sep
                     << objectsData << sep 
-                    << std::to_string(collisionCount) << sep 
-                    << std::to_string(stepSize) << std::endl;
+                    << std::to_string(collisionCount) << std::endl;
+                    
         }
     }
 
