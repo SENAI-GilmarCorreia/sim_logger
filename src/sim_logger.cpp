@@ -181,8 +181,8 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
                     << std::to_string(systemTime_ms) << sep 
                     << std::to_string(sim_rtf) << sep
                     << "" << sep
-                    << std::to_string(fps) << sep 
                     << "" << sep
+                    << std::to_string(fps) << sep 
                     << objectsData << sep 
                     << std::to_string(collisionCount) << std::endl;
                     
