@@ -22,6 +22,10 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
+if(NOT DEFINED ENV{NAAD_WS_DIR})
+  message(FATAL_ERROR "Environment variable NAAD_WS_DIR is not set")
+endif()
+
 if(NOT COPPELIASIM_INCLUDE_DIR)
     if(DEFINED ENV{COPPELIASIM_ROOT_DIR})
         set(COPPELIASIM_INCLUDE_DIR $ENV{COPPELIASIM_ROOT_DIR}/programming/include)

@@ -15,8 +15,6 @@ static std::chrono::high_resolution_clock::time_point lastTime, initialTime;
 static int frameCount = 0;
 static float fps = 0.0f;
 static char sep = ';';
-static double firstRealTime, firstSystemTime;
-static bool first = true;
 
 // Get current system date and time for filename creation
 static std::string getCurrentDateTime() {
@@ -65,20 +63,26 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         if (csvFile.is_open()) {
             csvFile.close();
         }
+        
+        // Save logs to the default coppelia path
+        std::string naadDir;
+        naadDir = std::getenv("NAAD_WS_DIR");
+        std::string coppeliaPath = std::string(naadDir) + "/logs/coppelia/";
 
         // Create CSV filename with date and time
         std::string dateTime = getCurrentDateTime();
         std::string fileName = "simLogger_" + dateTime + ".csv";
-        csvFile.open(fileName);
+        csvFile.open(coppeliaPath+fileName);
 
         // Verify if file opened successfully
         if (!csvFile.is_open()) {
-            std::cerr << "Unable to open CSV file: " << fileName << std::endl;
+            std::cerr << "Unable to open CSV file: " << coppeliaPath+fileName << std::endl;
             // simAddLog(info->pluginName, sim_verbosity_errors, "Unable to open CSV file for logging.");
         }
 
         // Write CSV headers
-        csvFile << "Frame" << sep 
+        csvFile << "Time Stamp (%Y-%m-%d_%H-%M-%S)" << sep
+                << "Frame" << sep 
                 << "CoppeliaSim - Step Size (ms)" << sep
                 << "CoppeliaSim - Simulation Time (ms)" << sep 
                 << "CoppeliaSim - Real Time (ms)" << sep
@@ -176,7 +180,8 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         // Write data to CSV file
         if (csvFile.is_open()) {
             auto sep = ';';
-            csvFile << std::to_string(frameCount) << sep 
+            csvFile << getCurrentDateTime() << sep
+                    << std::to_string(frameCount) << sep 
                     << std::to_string(stepSize) << sep
                     << std::to_string(simTime_ms) << sep 
                     << std::to_string(realTime_ms) << sep 
