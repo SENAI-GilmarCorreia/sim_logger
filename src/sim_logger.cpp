@@ -81,7 +81,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         }
 
         // Write CSV headers
-        csvFile << "Time Stamp (%Y-%m-%d_%H-%M-%S)" << sep
+        csvFile << "Timestamp (%Y-%m-%d_%H-%M-%S)" << sep
                 << "Frame" << sep 
                 << "CoppeliaSim - Step Size (ms)" << sep
                 << "CoppeliaSim - Simulation Time (ms)" << sep 
