@@ -15,6 +15,7 @@ static std::chrono::high_resolution_clock::time_point lastTime, initialTime;
 static int frameCount = 0;
 static float fps = 0.0f;
 static char sep = ';';
+static std::string modelName = "MiR100";
 
 // Get current system date and time for filename creation
 static std::string getCurrentDateTime() {
@@ -170,7 +171,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         double stepSize = simGetSimulationTimeStep() * 1000;  // Convert to ms
 
         // Example collision checking (replace with your actual objects' handles if needed)
-        int collisionHandle = simGetObject("/Floor",-1,-1,0);  // You can specify the object name or ID
+        int collisionHandle = simGetObject(("/"+modelName).c_str(),-1,-1,0);  // You can specify the object name or ID
         int collisionCount = 0;
         if (collisionHandle != -1)
         {
