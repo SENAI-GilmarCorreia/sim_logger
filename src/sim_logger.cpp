@@ -1,5 +1,6 @@
 #include "sim_logger.h"
 #include <simLib/scriptFunctionData.h>
+#include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,6 +17,23 @@ static int frameCount = 0;
 static float fps = 0.0f;
 static char sep = ';';
 static std::string modelName = "MiR100";
+
+// Helper function to get the latest folder in a directory
+std::string get_latest_folder(const std::string& path) {
+    std::string latest_folder;
+    std::time_t latest_time = 0;
+
+    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+        if (std::filesystem::is_directory(entry)) {
+            std::time_t folder_time = std::filesystem::last_write_time(entry).time_since_epoch().count();
+            if (folder_time > latest_time) {
+                latest_time = folder_time;
+                latest_folder = entry.path().string();
+            }
+        }
+    }
+    return latest_folder;
+}
 
 // Get current system date and time for filename creation
 static std::string getCurrentDateTime() {
@@ -68,7 +86,15 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         // Save logs to the default coppelia path
         std::string naadDir;
         naadDir = std::getenv("NAAD_WS_DIR");
-        std::string coppeliaPath = std::string(naadDir) + "/logs/coppelia/";
+        std::string coppeliaPath;
+
+        if (std::getenv("NAAD_CONFIG_LOGS")){
+            coppeliaPath = get_latest_folder(std::string(naadDir) + "/logs");
+            coppeliaPath += "/coppelia/";
+        }
+        else{
+            coppeliaPath = std::string(naadDir) + "/logs/coppelia/";
+        }
 
         // Create CSV filename with date and time
         std::string dateTime = getCurrentDateTime();
