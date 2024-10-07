@@ -18,20 +18,34 @@ static float fps = 0.0f;
 static char sep = ';';
 static std::string modelName = "MiR100";
 
+// Alias para filesystem
+namespace fs = std::filesystem;
+
 // Helper function to get the latest folder in a directory
 std::string get_latest_folder(const std::string& path) {
     std::string latest_folder;
     std::time_t latest_time = 0;
 
-    for (const auto& entry : std::filesystem::directory_iterator(path)) {
-        if (std::filesystem::is_directory(entry)) {
-            std::time_t folder_time = std::filesystem::last_write_time(entry).time_since_epoch().count();
+    for (const auto& entry : fs::directory_iterator(path)) {
+        if (fs::is_directory(entry)) {
+            // Obtém o tempo de modificação do diretório
+            auto ftime = fs::last_write_time(entry);
+
+            // Converte o file_time_type para system_clock::time_point
+            auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+                ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+
+            // Converte para time_t
+            std::time_t folder_time = std::chrono::system_clock::to_time_t(sctp);
+
+            // Verifica se o timestamp é mais recente
             if (folder_time > latest_time) {
                 latest_time = folder_time;
                 latest_folder = entry.path().string();
             }
         }
     }
+    
     return latest_folder;
 }
 
@@ -95,6 +109,8 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         else{
             coppeliaPath = std::string(naadDir) + "/logs/coppelia/";
         }
+
+        std::cout << coppeliaPath << std::endl;
 
         // Create CSV filename with date and time
         std::string dateTime = getCurrentDateTime();
