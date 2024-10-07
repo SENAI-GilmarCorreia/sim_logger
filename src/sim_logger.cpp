@@ -100,21 +100,22 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         // Save logs to the default coppelia path
         std::string naadDir;
         naadDir = std::getenv("NAAD_WS_DIR");
-        std::string coppeliaPath;
+        std::string coppeliaPath, fileName;
 
         if (std::getenv("NAAD_CONFIG_LOGS")){
             coppeliaPath = get_latest_folder(std::string(naadDir) + "/logs");
             coppeliaPath += "/coppelia/";
+
+            fileName = "simLogger.csv";
         }
         else{
             coppeliaPath = std::string(naadDir) + "/logs/coppelia/";
+            
+            std::string dateTime = getCurrentDateTime();
+            fileName = "simLogger_" + dateTime + ".csv";
         }
 
-        std::cout << coppeliaPath << std::endl;
-
         // Create CSV filename with date and time
-        std::string dateTime = getCurrentDateTime();
-        std::string fileName = "simLogger_" + dateTime + ".csv";
         csvFile.open(coppeliaPath+fileName);
 
         // Verify if file opened successfully
