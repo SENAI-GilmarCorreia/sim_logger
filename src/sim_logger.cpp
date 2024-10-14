@@ -14,6 +14,7 @@ static LIBRARY simLib;
 static std::ofstream csvFile;
 static std::chrono::high_resolution_clock::time_point lastTime, initialTime;
 static int frameCount = 0;
+static int totalFrames = 0;
 static float fps = 0.0f;
 static char sep = ';';
 static std::string modelName = "MiR100";
@@ -150,6 +151,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
 
         // Increment frame counter
         frameCount++;
+        totalFrames++;
 
         // Capture the current time for system-based measurements
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -225,7 +227,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         if (csvFile.is_open()) {
             auto sep = ';';
             csvFile << getCurrentDateTime() << sep
-                    << std::to_string(frameCount) << sep 
+                    << std::to_string(totalFrames) << sep 
                     << std::to_string(stepSize) << sep
                     << std::to_string(simTime_ms) << sep 
                     << std::to_string(realTime_ms) << sep 
