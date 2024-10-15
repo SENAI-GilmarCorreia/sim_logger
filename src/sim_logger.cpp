@@ -250,6 +250,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         }
 
         frameCount = 0;
+        totalFrames = 0;
         fps = 0.0f;
     }
 }
