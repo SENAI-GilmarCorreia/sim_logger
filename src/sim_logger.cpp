@@ -192,7 +192,7 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
                 objectsData += "{ \"alias\": \"" + alias + "\", ";
 
                 double pose[7];
-                int r = simGetObjectPose(objectHandle, sim_handle_world, pose);
+                int r = simGetObjectPose(objectHandle + sim.handleflag_wxyzquat, sim_handle_world, pose);
                 
                 objectsData += "\"pose\": ["
                      + std::to_string(pose[0]) + ", "
