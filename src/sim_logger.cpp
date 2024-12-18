@@ -153,92 +153,94 @@ SIM_DLLEXPORT void simMsg(SSimMsg* info)
         frameCount++;
         totalFrames++;
 
-        // Capture the current time for system-based measurements
-        auto currentTime = std::chrono::high_resolution_clock::now();
+        if(frameCount%50==0){
+            // Capture the current time for system-based measurements
+            auto currentTime = std::chrono::high_resolution_clock::now();
 
-        // Calculate elapsed time since the start of the simulation
-        std::chrono::duration<float> duration = currentTime - initialTime;
-        auto systemTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+            // Calculate elapsed time since the start of the simulation
+            std::chrono::duration<float> duration = currentTime - initialTime;
+            auto systemTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
-        // Calculate FPS if at least 1 second has passed
-        std::chrono::duration<float> elapsedTime = currentTime - lastTime;
-        if (elapsedTime.count() >= 1.0f) {
-            fps = frameCount / elapsedTime.count();
+            // Calculate FPS if at least 1 second has passed
+            std::chrono::duration<float> elapsedTime = currentTime - lastTime;
+            if (elapsedTime.count() >= 1.0f) {
+                fps = frameCount / elapsedTime.count();
 
-            // Reset frame count and update lastTime
-            frameCount = 0;
-            lastTime = currentTime;
-        }
-
-        double sim_rtf = simTime_ms/realTime_ms;
-
-        // Log active objects
-        int sceneObjectsCtn;
-        int *activeObjects = simGetObjectsInTree(sim_handle_scene, sim_handle_all, 2, &sceneObjectsCtn);
-    
-
-        // If there are no objects, return an empty JSON string
-        std::string objectsData; 
-        if (activeObjects == nullptr) {
-            objectsData = "[]";
-        }
-        else{
-            // Initialize the JSON string
-            objectsData = "[";
-            for (int i = 0; i < sceneObjectsCtn; i++) {
-                int objectHandle = activeObjects[i];
-
-                std::string alias(simGetObjectAlias(objectHandle, 0));
-                objectsData += "{ \"alias\": \"" + alias + "\", ";
-
-                double pose[7];
-                int r = simGetObjectPose(objectHandle + sim_handleflag_wxyzquat, sim_handle_world, pose);
-                
-                objectsData += "\"pose\": ["
-                     + std::to_string(pose[0]) + ", "
-                     + std::to_string(pose[1]) + ", "
-                     + std::to_string(pose[2]) + ", "
-                     + std::to_string(pose[3]) + ", "
-                     + std::to_string(pose[4]) + ", "
-                     + std::to_string(pose[5]) + ", "
-                     + std::to_string(pose[6]) + "]"
-                     + "}";
-
-                if (i < sceneObjectsCtn - 1) {
-                    objectsData += ", ";  // Add a comma between objects, but not after the last one
-                }
+                // Reset frame count and update lastTime
+                frameCount = 0;
+                lastTime = currentTime;
             }
-            objectsData += "]";
-        }
-        simReleaseBuffer(reinterpret_cast<char*>(activeObjects));
 
-        // Log the current simulation time step (step size)
-        double stepSize = simGetSimulationTimeStep() * 1000;  // Convert to ms
+            double sim_rtf = simTime_ms/realTime_ms;
 
-        // Example collision checking (replace with your actual objects' handles if needed)
-        int collisionHandle = simGetObject(("/"+modelName).c_str(),-1,-1,0);  // You can specify the object name or ID
-        int collisionCount = 0;
-        if (collisionHandle != -1)
-        {
-            collisionCount = simCheckCollision(collisionHandle, sim_handle_all);  // Check for collisions with any object
-        }
+            // Log active objects
+            int sceneObjectsCtn;
+            int *activeObjects = simGetObjectsInTree(sim_handle_scene, sim_handle_all, 2, &sceneObjectsCtn);
+        
 
-        // Write data to CSV file
-        if (csvFile.is_open()) {
-            auto sep = ';';
-            csvFile << getCurrentDateTime() << sep
-                    << std::to_string(totalFrames) << sep 
-                    << std::to_string(stepSize) << sep
-                    << std::to_string(simTime_ms) << sep 
-                    << std::to_string(realTime_ms) << sep 
-                    << std::to_string(systemTime_ms) << sep 
-                    << "" << sep //<< std::to_string(sim_rtf) << sep
-                    << "" << sep //<< os_rtf 
-                    << "" << sep //<< render fps
-                    << std::to_string(fps) << sep 
-                    << objectsData << sep 
-                    << std::to_string(collisionCount) << std::endl;
+            // If there are no objects, return an empty JSON string
+            std::string objectsData; 
+            if (activeObjects == nullptr) {
+                objectsData = "[]";
+            }
+            else{
+                // Initialize the JSON string
+                objectsData = "[";
+                for (int i = 0; i < sceneObjectsCtn; i++) {
+                    int objectHandle = activeObjects[i];
+
+                    std::string alias(simGetObjectAlias(objectHandle, 0));
+                    objectsData += "{ \"alias\": \"" + alias + "\", ";
+
+                    double pose[7];
+                    int r = simGetObjectPose(objectHandle + sim_handleflag_wxyzquat, sim_handle_world, pose);
                     
+                    objectsData += "\"pose\": ["
+                        + std::to_string(pose[0]) + ", "
+                        + std::to_string(pose[1]) + ", "
+                        + std::to_string(pose[2]) + ", "
+                        + std::to_string(pose[3]) + ", "
+                        + std::to_string(pose[4]) + ", "
+                        + std::to_string(pose[5]) + ", "
+                        + std::to_string(pose[6]) + "]"
+                        + "}";
+
+                    if (i < sceneObjectsCtn - 1) {
+                        objectsData += ", ";  // Add a comma between objects, but not after the last one
+                    }
+                }
+                objectsData += "]";
+            }
+            simReleaseBuffer(reinterpret_cast<char*>(activeObjects));
+
+            // Log the current simulation time step (step size)
+            double stepSize = simGetSimulationTimeStep() * 1000;  // Convert to ms
+
+            // Example collision checking (replace with your actual objects' handles if needed)
+            int collisionHandle = simGetObject(("/"+modelName).c_str(),-1,-1,0);  // You can specify the object name or ID
+            int collisionCount = 0;
+            if (collisionHandle != -1)
+            {
+                collisionCount = simCheckCollision(collisionHandle, sim_handle_all);  // Check for collisions with any object
+            }
+
+            // Write data to CSV file
+            if (csvFile.is_open()) {
+                auto sep = ';';
+                csvFile << getCurrentDateTime() << sep
+                        << std::to_string(totalFrames) << sep 
+                        << std::to_string(stepSize) << sep
+                        << std::to_string(simTime_ms) << sep 
+                        << std::to_string(realTime_ms) << sep 
+                        << std::to_string(systemTime_ms) << sep 
+                        << "" << sep //<< std::to_string(sim_rtf) << sep
+                        << "" << sep //<< os_rtf 
+                        << "" << sep //<< render fps
+                        << std::to_string(fps) << sep 
+                        << objectsData << sep 
+                        << std::to_string(collisionCount) << std::endl;
+                        
+            }
         }
     }
 
